@@ -1,16 +1,15 @@
 <?php
 
-// Fix 1: Update Product Model - app/Models/Product.php
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
+use App\Traits\HasSlug;
+use App\Traits\Searchable;
 
-class Product extends Model implements HasMedia
+class Product extends Model
 {
-    use HasFactory, InteractsWithMedia;
+    use HasFactory, HasSlug, Searchable;
 
     protected $fillable = [
         'name',
@@ -33,6 +32,8 @@ class Product extends Model implements HasMedia
         'is_featured' => 'boolean',
         'meta_data' => 'array', // IMPORTANT: Cast JSON field to array
     ];
+
+    protected $searchable = ['name', 'description', 'sku'];
 
     // Rest of your model relationships and methods...
     public function categories()

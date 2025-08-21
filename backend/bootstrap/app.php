@@ -16,10 +16,14 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role'     => \App\Http\Middleware\RoleMiddleware::class,
             'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+            'force.json' => \App\Http\Middleware\ForceJsonResponse::class,
+            'log.api' => \App\Http\Middleware\LogApiRequests::class,
         ]);
 
         // (Opsional tapi bagus) tambahkan throttle default ke grup 'api'
         $middleware->appendToGroup('api', [
+            'force.json',
+            'log.api',
             'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ]);
