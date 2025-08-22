@@ -30,6 +30,9 @@ class ProductResource extends JsonResource
             'primary_image' => new ProductImageResource($this->whenLoaded('primaryImage')),
             'categories' => CategoryResource::collection($this->whenLoaded('categories')),
             'variants' => ProductVariantResource::collection($this->whenLoaded('variants')),
+            'in_wishlist' => $this->when(auth()->check(), function () {
+                return $this->wishlists()->where('user_id', auth()->id())->exists();
+            }),
             'specifications' => $this->when(
                 $request->routeIs('*.show'),
                 $this->meta_data['specs'] ?? []

@@ -78,8 +78,6 @@ Route::prefix('v1')->group(function () {
     // Webhooks (No Auth - but secured with signature verification)
     Route::prefix('webhooks')->group(function () {
         Route::post('midtrans', [MidtransWebhookController::class, 'handle']);
-        Route::post('xendit', [XenditWebhookController::class, 'handle']);
-        Route::post('shipper', [ShipperWebhookController::class, 'handle']);
     });
 
     // ==========================================
@@ -141,18 +139,9 @@ Route::prefix('v1')->group(function () {
             Route::get('{order:code}/tracking', [OrderController::class, 'trackShipment']);
         });
 
-        // Reviews & Ratings
-        Route::prefix('reviews')->group(function () {
-            Route::post('/', [ReviewController::class, 'store']);
-            Route::patch('{review}', [ReviewController::class, 'update']);
-            Route::delete('{review}', [ReviewController::class, 'destroy']);
-        });
-
-        // Notifications
-        Route::prefix('notifications')->group(function () {
-            Route::get('/', [NotificationController::class, 'index']);
-            Route::post('{notification}/read', [NotificationController::class, 'markAsRead']);
-            Route::post('mark-all-read', [NotificationController::class, 'markAllAsRead']);
+        // Vouchers
+        Route::prefix('vouchers')->group(function () {
+            Route::get('available', [VoucherController::class, 'available']);
         });
 
         // ==========================================

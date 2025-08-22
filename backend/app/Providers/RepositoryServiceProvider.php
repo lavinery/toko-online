@@ -14,6 +14,10 @@ class RepositoryServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
+
+        // Register services
+        $this->app->singleton(CartService::class);
+        $this->app->singleton(OrderService::class);
     }
 
     /**

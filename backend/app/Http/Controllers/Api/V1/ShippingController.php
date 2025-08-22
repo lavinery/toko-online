@@ -45,6 +45,22 @@ class ShippingController extends Controller
     }
 
     /**
+     * Get subdistricts
+     */
+    public function subdistricts(Request $request): JsonResponse
+    {
+        $request->validate([
+            'city_id' => 'required|integer'
+        ]);
+
+        $subdistricts = $this->shippingService->getSubdistricts($request->city_id);
+
+        return response()->json([
+            'data' => $subdistricts
+        ]);
+    }
+
+    /**
      * Calculate shipping cost
      */
     public function calculateCost(Request $request): JsonResponse

@@ -18,10 +18,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
             'force.json' => \App\Http\Middleware\ForceJsonResponse::class,
             'log.api' => \App\Http\Middleware\LogApiRequests::class,
+            'cors' => \App\Http\Middleware\CorsMiddleware::class,
         ]);
 
         // (Opsional tapi bagus) tambahkan throttle default ke grup 'api'
         $middleware->appendToGroup('api', [
+            'cors',
             'force.json',
             'log.api',
             'throttle:api',

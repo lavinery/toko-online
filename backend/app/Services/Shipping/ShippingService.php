@@ -67,6 +67,24 @@ class ShippingService
     }
 
     /**
+     * Get subdistricts by city ID
+     */
+    public function getSubdistricts(int $cityId): array
+    {
+        $cacheKey = "rajaongkir_subdistricts_{$cityId}";
+
+        return Cache::remember($cacheKey, 86400, function () use ($cityId) {
+            try {
+                // Note: RajaOngkir Starter doesn't support subdistricts
+                // This is a placeholder for Pro version or other APIs
+                return [];
+            } catch (\Exception $e) {
+                return [];
+            }
+        });
+    }
+
+    /**
      * Calculate shipping cost
      */
     public function calculateCost(int $destinationCityId, string $courier, string $service, int $weight): float

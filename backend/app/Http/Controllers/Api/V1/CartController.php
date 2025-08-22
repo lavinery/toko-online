@@ -524,4 +524,118 @@ class CartController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Update guest cart item
+     */
+    public function guestUpdate(Request $request, string $itemId): JsonResponse
+    {
+        $request->validate([
+            'quantity' => 'required|integer|min:1|max:100',
+        ]);
+
+        try {
+            $sessionId = $request->header('X-Session-ID') ?? session()->getId();
+            $cart = Cart::where('session_id', $sessionId)->first();
+
+            if (!$cart) {
+                return response()->json([
+                    'message' => 'Cart not found'
+                ], 404);
+            }
+
+            $item = $cart->items()->findOrFail($itemId);
+
+            // Check inventory
+            $inventory = $item->getCurrentInventory();
+            if (!$inventory || !$inventory->canFulfill($request->quantity)) {
+                return response()->json([
+                    'message' => 'Insufficient stock',
+                    'available_stock' => $inventory->available_quantity ?? 0
+                ], 422);
+            }
+
+            $item->update(['quantity' => $request->quantity]);
+
+            return response()->json([
+                'message' => 'Cart item updated successfully',
+                'data' => [
+                    'cart_summary' => [
+                        'total_items' => $cart->fresh()->total_quantity,
+                        'subtotal' => $cart->fresh()->subtotal,
+                    ]
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to update cart item',
+                'error' => app()->environment('local') ? $e->getMessage() : 'Internal server error'
+            ], 500);
+        }
+    }
+
+    /**
+     * Remove guest cart item
+     */
+    public function guestRemove(Request $request, string $itemId): JsonResponse
+    {
+        try {
+            $sessionId = $request->header('X-Session-ID') ?? session()->getId();
+            $cart = Cart::where('session_id', $sessionId)->first();
+
+            if (!$cart) {
+                return response()->json([
+                    'message' => 'Cart not found'
+                ], 404);
+            }
+
+            $item = $cart->items()->findOrFail($itemId);
+            $item->delete();
+
+            return response()->json([
+                'message' => 'Item removed from cart successfully',
+                'data' => [
+                    'cart_summary' => [
+                        'total_items' => $cart->fresh()->total_quantity,
+                        'subtotal' => $cart->fresh()->subtotal,
+                    ]
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to remove cart item',
+                'error' => app()->environment('local') ? $e->getMessage() : 'Internal server error'
+            ], 500);
+        }
+    }
+
+    /**
+     * Clear guest cart
+     */
+    public function guestClear(Request $request): JsonResponse
+    {
+        try {
+            $sessionId = $request->header('X-Session-ID') ?? session()->getId();
+            $cart = Cart::where('session_id', $sessionId)->first();
+
+            if ($cart) {
+                $cart->items()->delete();
+            }
+
+            return response()->json([
+                'message' => 'Cart cleared successfully',
+                'data' => [
+                    'cart_summary' => [
+                        'total_items' => 0,
+                        'subtotal' => 0,
+                    ]
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to clear cart',
+                'error' => app()->environment('local') ? $e->getMessage() : 'Internal server error'
+            ], 500);
+        }
+    }
 }
