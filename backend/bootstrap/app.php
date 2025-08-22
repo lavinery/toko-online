@@ -1,5 +1,6 @@
 <?php
 
+// bootstrap/app.php (Alternative without throttle for now)
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -12,21 +13,19 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Alias yang benar
+        // Middleware aliases
         $middleware->alias([
-            'role'     => \App\Http\Middleware\RoleMiddleware::class,
-            'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+            'role' => \App\Http\Middleware\RoleMiddleware::class,
             'force.json' => \App\Http\Middleware\ForceJsonResponse::class,
             'log.api' => \App\Http\Middleware\LogApiRequests::class,
             'cors' => \App\Http\Middleware\CorsMiddleware::class,
         ]);
 
-        // (Opsional tapi bagus) tambahkan throttle default ke grup 'api'
-        $middleware->appendToGroup('api', [
+        // API middleware group (tanpa throttle dulu)
+        $middleware->group('api', [
             'cors',
             'force.json',
             'log.api',
-            'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ]);
     })

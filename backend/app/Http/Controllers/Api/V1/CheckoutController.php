@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderResource;
 use App\Models\{Cart, Order, OrderItem, OrderVoucher, Voucher, UserAddress, Inventory, Shipment};
+use App\Services\{OrderService, InventoryService};
 use App\Services\Payment\MidtransService;
 use App\Services\Shipping\ShippingService;
 use Illuminate\Http\Request;
@@ -15,14 +16,11 @@ use Illuminate\Validation\ValidationException;
 
 class CheckoutController extends Controller
 {
-    protected $midtransService;
-    protected $shippingService;
-
-    public function __construct(MidtransService $midtransService, ShippingService $shippingService)
-    {
-        $this->midtransService = $midtransService;
-        $this->shippingService = $shippingService;
-    }
+    public function __construct(
+        private OrderService $orderService,
+        private ShippingService $shippingService,
+        private InventoryService $inventoryService
+    ) {}
 
     /**
      * Validate checkout data before processing
@@ -53,8 +51,11 @@ class CheckoutController extends Controller
 
             // Validate stock availability
             foreach ($cart->items as $item) {
-                $inventory = $item->getCurrentInventory();
-                if (!$inventory || !$inventory->canFulfill($item->quantity)) {
+                if (!$this->inventoryService->checkAvailability(
+                    $item->product_id,
+                    $item->product_variant_id,
+                    $item->quantity
+                )) {
                     throw ValidationException::withMessages([
                         'stock' => ["Stok {$item->product->name} tidak mencukupi"]
                     ]);
@@ -106,7 +107,7 @@ class CheckoutController extends Controller
                         'courier' => $request->courier,
                         'service' => $request->service,
                         'cost' => $shippingCost,
-                        'estimated_delivery' => '2-3 hari kerja', // From shipping service
+                        'estimated_delivery' => '2-3 hari kerja',
                     ]
                 ]
             ]);

@@ -1,5 +1,6 @@
 <?php
 
+// app/Services/OrderService.php
 namespace App\Services;
 
 use App\Models\{Order, OrderItem, OrderVoucher, Cart, Voucher, UserAddress, Shipment};
@@ -146,8 +147,6 @@ class OrderService
         switch ($gateway) {
             case 'midtrans':
                 return $this->midtransService->createTransaction($order);
-
-                // Add other payment gateways here
             default:
                 throw new \Exception("Unsupported payment gateway: {$gateway}");
         }

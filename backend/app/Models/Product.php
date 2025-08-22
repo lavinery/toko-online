@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\HasSlug;
 use App\Traits\Searchable;
+use Illuminate\Support\Str;
 
 class Product extends Model
 {
