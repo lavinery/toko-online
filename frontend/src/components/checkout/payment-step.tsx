@@ -1,4 +1,4 @@
-/ src/components/checkout/payment-step.tsx
+// src/components/checkout/payment-step.tsx
 'use client';
 
 import { useState } from 'react';

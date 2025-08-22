@@ -1,4 +1,4 @@
-/ src/app/page.tsx
+// src/app/page.tsx - Fixed version
 import { Suspense } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Star, Truck, Shield, Headphones } from 'lucide-react';
@@ -13,48 +13,53 @@ import { ROUTES } from '@/lib/constants';
 export default function HomePage() {
   return (
     <div className="space-y-16">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-primary-600 to-primary-700 text-white">
-        <div className="container py-24 md:py-32">
+      {/* Hero Section - DIPERBAIKI */}
+      <section className="relative min-h-[80vh] bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 text-white flex items-center">
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="container relative z-10 py-24 md:py-32">
           <div className="max-w-3xl">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
               Belanja Online
               <br />
-              <span className="text-primary-200">Mudah & Aman</span>
+              <span className="text-blue-200">Mudah & Aman</span>
             </h1>
-            <p className="text-xl md:text-2xl text-primary-100 mb-8">
+            <p className="text-xl md:text-2xl text-blue-100 mb-8 leading-relaxed">
               Temukan ribuan produk berkualitas dengan harga terbaik. 
               Gratis ongkir ke seluruh Indonesia.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" variant="secondary" asChild>
+              <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50" asChild>
                 <Link href={ROUTES.PRODUCTS}>
                   Mulai Belanja
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" className="text-white border-white hover:bg-white hover:text-primary-600">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border-white text-white hover:bg-white hover:text-blue-600 transition-all"
+              >
                 Lihat Promo
               </Button>
             </div>
           </div>
         </div>
         
-        {/* Hero Image/Graphics */}
-        <div className="absolute inset-y-0 right-0 w-1/2 hidden lg:block">
-          <div className="h-full w-full bg-gradient-to-l from-transparent to-primary-600/20">
-            {/* You can add hero image here */}
-          </div>
+        {/* Decorative Pattern */}
+        <div className="absolute bottom-0 left-0 right-0">
+          <svg viewBox="0 0 1200 120" className="w-full h-16 text-gray-50">
+            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" fill="currentColor"></path>
+          </svg>
         </div>
       </section>
 
       {/* Features */}
       <section className="container">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <Card className="text-center border-0 shadow-lg">
+          <Card className="text-center border-0 shadow-lg hover:shadow-xl transition-shadow">
             <CardContent className="pt-8 pb-6">
-              <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Truck className="h-6 w-6 text-primary-600" />
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Truck className="h-8 w-8 text-blue-600" />
               </div>
               <h3 className="font-semibold text-lg mb-2">Gratis Ongkir</h3>
               <p className="text-gray-600">
@@ -63,10 +68,10 @@ export default function HomePage() {
             </CardContent>
           </Card>
 
-          <Card className="text-center border-0 shadow-lg">
+          <Card className="text-center border-0 shadow-lg hover:shadow-xl transition-shadow">
             <CardContent className="pt-8 pb-6">
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Shield className="h-6 w-6 text-green-600" />
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Shield className="h-8 w-8 text-green-600" />
               </div>
               <h3 className="font-semibold text-lg mb-2">Pembayaran Aman</h3>
               <p className="text-gray-600">
@@ -75,10 +80,10 @@ export default function HomePage() {
             </CardContent>
           </Card>
 
-          <Card className="text-center border-0 shadow-lg">
+          <Card className="text-center border-0 shadow-lg hover:shadow-xl transition-shadow">
             <CardContent className="pt-8 pb-6">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Headphones className="h-6 w-6 text-blue-600" />
+              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Headphones className="h-8 w-8 text-purple-600" />
               </div>
               <h3 className="font-semibold text-lg mb-2">Customer Service 24/7</h3>
               <p className="text-gray-600">
@@ -98,7 +103,7 @@ export default function HomePage() {
           </p>
         </div>
         
-        <Suspense fallback={<Loading />}>
+        <Suspense fallback={<CategoryLoadingSkeleton />}>
           <CategoryGrid />
         </Suspense>
       </section>
@@ -118,13 +123,13 @@ export default function HomePage() {
           </Button>
         </div>
         
-        <Suspense fallback={<Loading />}>
+        <Suspense fallback={<ProductLoadingSkeleton />}>
           <FeaturedProducts />
         </Suspense>
       </section>
 
       {/* Newsletter */}
-      <section className="bg-gray-50">
+      <section className="bg-gradient-to-r from-blue-50 to-purple-50">
         <div className="container py-16">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-3xl font-bold mb-4">Dapatkan Update Terbaru</h2>
@@ -136,16 +141,47 @@ export default function HomePage() {
               <input
                 type="email"
                 placeholder="Masukkan email Anda"
-                className="flex-1 px-4 py-3 rounded-md border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="flex-1 px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                 required
               />
-              <Button type="submit" className="whitespace-nowrap">
+              <Button type="submit" className="whitespace-nowrap bg-blue-600 hover:bg-blue-700">
                 Berlangganan
               </Button>
             </form>
           </div>
         </div>
       </section>
+    </div>
+  );
+}
+
+// Loading skeletons untuk better UX
+function CategoryLoadingSkeleton() {
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      {[...Array(6)].map((_, i) => (
+        <div key={i} className="animate-pulse">
+          <div className="aspect-square bg-gray-200 rounded-lg mb-2"></div>
+          <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto"></div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ProductLoadingSkeleton() {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {[...Array(8)].map((_, i) => (
+        <div key={i} className="animate-pulse">
+          <div className="aspect-square bg-gray-200 rounded-lg mb-4"></div>
+          <div className="space-y-2">
+            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+            <div className="h-6 bg-gray-200 rounded w-1/3"></div>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

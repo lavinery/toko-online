@@ -1,22 +1,24 @@
-// next.config.js
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-  swcMinify: true,
   experimental: {
-    appDir: true,
+    turbo: {
+      rules: {
+        "*.svg": {
+          loaders: ["@svgr/webpack"],
+          as: "*.js",
+        },
+      },
+    },
   },
   images: {
     domains: [
       "localhost",
+      "127.0.0.1",
       "api.domainkamu.com",
       "storage.googleapis.com",
-      "images.unsplash.com", // For demo images
+      "images.unsplash.com",
     ],
     formats: ["image/webp", "image/avif"],
-  },
-  env: {
-    CUSTOM_KEY: "my-value",
   },
   async rewrites() {
     return [

@@ -1,6 +1,5 @@
-// src/components/checkout/checkout-flow.tsx
 'use client';
-
+// src/components/checkout/checkout-flow.tsx (completion of the file)
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { CheckCircle, MapPin, Truck, CreditCard, ShoppingBag } from 'lucide-react';
@@ -36,6 +35,7 @@ export interface CheckoutData {
     code: string;
     discount: number;
   };
+  notes?: string;
 }
 
 const steps = [
@@ -116,10 +116,158 @@ export function CheckoutFlow() {
     return true;
   };
 
+  const handleSubmitOrder = async (finalData: CheckoutData) => {
+    setIsProcessing(true);
+    try {
+      // Mock API call for order submission
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      toast.success('Pesanan berhasil dibuat!');
+      router.push('/pesanan');
+    } catch (error) {
+      toast.error('Gagal membuat pesanan. Silakan coba lagi.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
           <div className="animate-pulse space-y-8">
             <div className="h-16 bg-gray-200 rounded"></div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8"></div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2 space-y-6">
+                <div className="h-64 bg-gray-200 rounded"></div>
+              </div>
+              <div className="h-96 bg-gray-200 rounded"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto">
+        {/* Progress Steps */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            {steps.map((step, index) => {
+              const Icon = step.icon;
+              const isCompleted = isStepCompleted(step.key);
+              const isActive = isStepActive(step.key);
+              const canProceed = canProceedToStep(step.key);
+              
+              return (
+                <div key={step.key} className="flex items-center">
+                  <button
+                    onClick={() => canProceed && setCurrentStep(step.key as CheckoutStep)}
+                    disabled={!canProceed}
+                    className={`flex items-center justify-center w-12 h-12 rounded-full border-2 transition-colors ${
+                      isCompleted
+                        ? 'bg-green-500 border-green-500 text-white'
+                        : isActive
+                        ? 'bg-primary-600 border-primary-600 text-white'
+                        : canProceed
+                        ? 'border-gray-300 text-gray-400 hover:border-primary-600'
+                        : 'border-gray-200 text-gray-300 cursor-not-allowed'
+                    }`}
+                  >
+                    {isCompleted ? (
+                      <CheckCircle className="h-6 w-6" />
+                    ) : (
+                      <Icon className="h-6 w-6" />
+                    )}
+                  </button>
+                  
+                  {index < steps.length - 1 && (
+                    <div className={`w-16 h-0.5 mx-4 ${
+                      isCompleted ? 'bg-green-500' : 'bg-gray-200'
+                    }`} />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          
+          <div className="flex justify-between mt-2">
+            {steps.map((step) => (
+              <div key={step.key} className="text-center">
+                <p className={`text-sm font-medium ${
+                  isStepActive(step.key) 
+                    ? 'text-primary-600' 
+                    : isStepCompleted(step.key)
+                    ? 'text-green-600'
+                    : 'text-gray-500'
+                }`}>
+                  {step.label}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Content */}
+          <div className="lg:col-span-2">
+            <Card>
+              <CardContent className="p-6">
+                {currentStep === 'address' && (
+                  <AddressStep
+                    data={checkoutData}
+                    onNext={(data) => {
+                      updateCheckoutData(data);
+                      goToNextStep();
+                    }}
+                  />
+                )}
+                
+                {currentStep === 'shipping' && (
+                  <ShippingStep
+                    data={checkoutData}
+                    cart={cart!}
+                    onNext={(data) => {
+                      updateCheckoutData(data);
+                      goToNextStep();
+                    }}
+                    onBack={goToPreviousStep}
+                  />
+                )}
+                
+                {currentStep === 'payment' && (
+                  <PaymentStep
+                    data={checkoutData}
+                    cart={cart!}
+                    onNext={(data) => {
+                      updateCheckoutData(data);
+                      goToNextStep();
+                    }}
+                    onBack={goToPreviousStep}
+                  />
+                )}
+                
+                {currentStep === 'review' && (
+                  <ReviewStep
+                    data={checkoutData}
+                    cart={cart!}
+                    onBack={goToPreviousStep}
+                    onSubmit={handleSubmitOrder}
+                    isProcessing={isProcessing}
+                  />
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Sidebar Summary */}
+          <div>
+            <CheckoutSummary cart={cart!} data={checkoutData} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
